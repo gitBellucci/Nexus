@@ -341,80 +341,158 @@ end
 function SBG.HideDrop()
     if SBG._drop then SBG._drop:Hide() end
     if SBG._dropCatch then SBG._dropCatch:Hide() end
+    SBG._dropOpen = nil
 end
 
+function SBG.IsDropOpen()
+    return SBG._drop and SBG._drop:IsShown()
+end
+
+-- Cursor-anchored context menu (RXP-style).
+-- Right-click again / click elsewhere closes. Optional frame anchor for pickers.
 function SBG.ShowDrop(items, anchor)
+    -- Second click (theme picker, cursor menu, etc.) closes while open.
+    if SBG.IsDropOpen() then
+        SBG.HideDrop()
+        return
+    end
+
     if not SBG._drop then
-        local d = CreateFrame("Frame", "SBGDropFrame", UIParent)
-        d:SetFrameStrata("TOOLTIP")
-        d:SetToplevel(true)
-        d:EnableMouse(true)
-        d:SetWidth(210)
-        SBG.Fill(d)
-        d.rows = {}
-        for i = 1, 20 do
-            local r = CreateFrame("Button", nil, d)
-            r:SetHeight(22)
-            r:SetPoint("TOPLEFT", 4, -4 - (i - 1) * 22)
-            r:SetPoint("TOPRIGHT", -4, -4 - (i - 1) * 22)
-            r.label = SBG.MakeText(r, "GameFontHighlightSmall")
-            r.label:SetPoint("LEFT", 8, 0)
-            r.label:SetJustifyH("LEFT")
-            r:SetScript("OnEnter", function(self)
-                if self.disabled then return end
-                local t = SBG.Theme()
-                if self.bg then self.bg:SetColorTexture(t.hover[1], t.hover[2], t.hover[3], 1) end
-            end)
-            r:SetScript("OnLeave", function(self)
-                SBG.Fill(self, SBG.Theme().bg, 0.15)
-            end)
-            SBG.Fill(r, SBG.Theme().bg, 0.15)
-            d.rows[i] = r
-        end
         local catch = CreateFrame("Button", "SBGDropCatch", UIParent)
         catch:SetAllPoints(UIParent)
-        catch:SetFrameStrata("DIALOG")
+        catch:SetFrameStrata("FULLSCREEN_DIALOG")
+        catch:SetFrameLevel(1)
         catch:Hide()
+        catch:RegisterForClicks("AnyUp")
         catch:SetScript("OnClick", SBG.HideDrop)
-        SBG._drop = d
+        catch:EnableMouse(true)
         SBG._dropCatch = catch
+
+        local d = CreateFrame("Frame", "SBGDropFrame", UIParent)
+        d:SetFrameStrata("TOOLTIP")
+        d:SetFrameLevel(100)
+        d:SetToplevel(true)
+        d:EnableMouse(true)
+        d:SetWidth(220)
+        d:SetClampedToScreen(true)
+        pcall(function() d:SetClipsChildren(true) end)
+        SBG.Paint(d, nil, "glass")
+
+        local title = CreateFrame("Frame", nil, d)
+        title:SetPoint("TOPLEFT", 6, -6)
+        title:SetPoint("TOPRIGHT", -6, -6)
+        title:SetHeight(26)
+        SBG.StyleGlassChip(title, "pill")
+        title.label = SBG.MakeText(title, "GameFontNormal")
+        title.label:SetPoint("CENTER", 0, 0)
+        title.label:SetText("SWEAT")
+        title.label:SetTextColor(0.95, 0.82, 0.35)
+        d.titleBar = title
+
+        d.rows = {}
+        for i = 1, 24 do
+            local r = CreateFrame("Button", nil, d)
+            r:SetHeight(22)
+            r:EnableMouse(true)
+            r.hl = r:CreateTexture(nil, "HIGHLIGHT")
+            r.hl:SetAllPoints()
+            r.hl:SetTexture("Interface\\Worldmap\\UI-QuestPoi-HighlightBar")
+            r.hl:SetBlendMode("ADD")
+            r.hl:SetAlpha(0.45)
+            r.label = SBG.MakeText(r, "GameFontHighlightSmall")
+            r.label:SetPoint("LEFT", 10, 0)
+            r.label:SetPoint("RIGHT", -8, 0)
+            r.label:SetJustifyH("LEFT")
+            r:SetScript("OnEnter", function(self)
+                if self.disabled or self.isTitle then return end
+                SBG.Paint(self, 1, "hover")
+            end)
+            r:SetScript("OnLeave", function(self)
+                if self.isTitle then
+                    SBG.Paint(self, nil, "clear")
+                else
+                    SBG.Fill(self, { 1, 1, 1 }, 0.03)
+                end
+            end)
+            d.rows[i] = r
+        end
+        SBG._drop = d
     end
+
     local d = SBG._drop
-    SBG.Fill(d)
+    SBG.Paint(d, nil, "glass")
+    if d.titleBar then
+        SBG.StyleGlassChip(d.titleBar, "pill")
+        local font = SBG.Font()
+        local t = SBG.Theme()
+        local titleC = t.title or t.accent
+        d.titleBar.label:SetFont(font, 12, SBG.FontFlags())
+        d.titleBar.label:SetText("SWEAT")
+        d.titleBar.label:SetTextColor(titleC[1], titleC[2], titleC[3])
+    end
+
+    -- Skip a duplicate "SWEAT" title item — we render it as the chip header.
+    local y = 36
     local n = 0
+    local maxW = 200
     for i = 1, #items do
         local item = items[i]
-        n = n + 1
-        local r = d.rows[n]
-        r.label:SetText(item.text or "")
-        r.disabled = item.isTitle or item.disabled
-        if item.isTitle then
-            SBG.ColorSet(r.label, "muted")
-            r:SetScript("OnClick", nil)
-            r:EnableMouse(false)
+        if item.isTitle and item.text and string.upper(item.text) == "SWEAT" then
+            -- already shown in titleBar
         else
-            SBG.ColorSet(r.label, "body")
-            r:EnableMouse(true)
-            r:SetScript("OnClick", function()
-                SBG.HideDrop()
-                if item.func then item.func() end
-            end)
+            n = n + 1
+            if n > #d.rows then break end
+            local r = d.rows[n]
+            r:ClearAllPoints()
+            r:SetPoint("TOPLEFT", 4, -y)
+            r:SetPoint("TOPRIGHT", -4, -y)
+            r.label:SetText(item.text or "")
+            r.disabled = item.disabled and true or false
+            r.isTitle = item.isTitle and true or false
+            if item.isTitle then
+                local t = SBG.Theme()
+                r.label:SetTextColor(t.accent[1], t.accent[2], t.accent[3], 1)
+                r:SetScript("OnClick", nil)
+                r:EnableMouse(false)
+                SBG.Paint(r, nil, "clear")
+            elseif item.disabled then
+                r.label:SetTextColor(0.55, 0.55, 0.55)
+                r:SetScript("OnClick", nil)
+                r:EnableMouse(false)
+                SBG.Fill(r, { 1, 1, 1 }, 0.02)
+            else
+                SBG.ColorSet(r.label, "body")
+                r:EnableMouse(true)
+                r:SetScript("OnClick", function()
+                    SBG.HideDrop()
+                    if item.func then item.func() end
+                end)
+                SBG.Fill(r, { 1, 1, 1 }, 0.03)
+            end
+            if r.label.GetStringWidth then
+                maxW = math.max(maxW, r.label:GetStringWidth() + 28)
+            end
+            r:Show()
+            y = y + 22
         end
-        SBG.Fill(r, SBG.Theme().bg, 0.15)
-        r:Show()
     end
     for i = n + 1, #d.rows do
         d.rows[i]:Hide()
     end
-    d:SetHeight(8 + n * 22)
+
+    d:SetWidth(math.min(280, math.max(200, maxW)))
+    d:SetHeight(y + 8)
     d:ClearAllPoints()
+
     if type(anchor) == "table" and anchor.GetLeft then
         d:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -4)
     else
-        local x, y = GetCursorPosition()
-        local scale = UIParent:GetEffectiveScale()
-        d:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / scale, y / scale)
+        local x, ycur = GetCursorPosition()
+        local scale = UIParent:GetEffectiveScale() or 1
+        d:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / scale, ycur / scale)
     end
+
     SBG._dropCatch:Show()
     d:Show()
+    SBG._dropOpen = true
 end

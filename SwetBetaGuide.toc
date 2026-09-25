@@ -2,12 +2,13 @@
 ## Title: Sweat Beta Guide
 ## Notes: In-game leveling and library-book guides for WoW Forever. Type /sbg or /sweat
 ## Author: Sweat
-## Version: 1.0.0
+## Version: 1.1.0
 ## IconTexture: Interface\AddOns\SwetBetaGuide\Textures\icon
 ## X-Category: Quests
 ## X-Website: https://github.com/gitBellucci/SweatBetaGuide
 ## SavedVariables: SBGDB
 ## SavedVariablesPerCharacter: SBGPC
+## Bindings: Bindings.xml
 
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.lua

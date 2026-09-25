@@ -320,6 +320,10 @@ function Engine:Load(key, index)
         SBG.Print("Guide not found.")
         return
     end
+    if guide.locked then
+        SBG.Print(guide.lockedReason or "This guide is locked for your faction.")
+        return
+    end
     self.guide = guide
     SBGPC.guideKey = key
     self:SetStep(index or 1)

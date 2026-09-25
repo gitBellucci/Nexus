@@ -36,72 +36,55 @@ function Menu:Init()
     panel:EnableMouse(true)
     panel:SetScript("OnMouseUp", function() end)
     self.panel = panel
-    if panel.SetBackdrop then
-        panel:SetBackdrop({
-            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile = true,
-            tileSize = 32,
-            edgeSize = 32,
-            insets = { left = 11, right = 12, top = 12, bottom = 11 },
-        })
-        panel:SetBackdropColor(0, 0, 0, 1)
-    else
-        SBG.Fill(panel, { 0.05, 0.05, 0.08 }, 1)
-    end
+    SBG.Paint(panel, nil, "glass")
+    pcall(function() panel:SetClipsChildren(true) end)
 
+    -- Rounded liquid-glass header matching the main guide window
     local titleBar = CreateFrame("Frame", nil, panel)
-    titleBar:SetPoint("TOPLEFT", 12, -12)
-    titleBar:SetPoint("TOPRIGHT", -12, -12)
-    titleBar:SetHeight(28)
+    titleBar:SetPoint("TOPLEFT", 14, -14)
+    titleBar:SetPoint("TOPRIGHT", -14, -14)
+    titleBar:SetHeight(36)
     self.titleBar = titleBar
+    SBG.StyleGlassChip(titleBar, "chip")
 
-    self.logo = SBG.MakeText(titleBar, "GameFontNormalLarge")
-    self.logo:SetPoint("LEFT", 8, 0)
+    self.brandIcon = titleBar:CreateTexture(nil, "ARTWORK")
+    self.brandIcon:SetSize(22, 22)
+    self.brandIcon:SetPoint("LEFT", 12, 0)
+    self.brandIcon:SetTexture(SBG.ICON_TEX)
+    self.brandIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+    self.logo = SBG.MakeText(titleBar, "GameFontNormal")
+    self.logo:SetPoint("LEFT", self.brandIcon, "RIGHT", 8, 0)
     self.logo:SetText("Sweat Beta Guide")
 
     self.title = SBG.MakeText(titleBar, "GameFontHighlight")
     self.title:SetPoint("LEFT", self.logo, "RIGHT", 10, 0)
     self.title:SetText("")
 
-    local close
-    pcall(function()
-        close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
+    local close = SBG.MakeGlassButton(titleBar, "X", 28, 24, function()
+        Menu.forceWelcome = false
+        overlay:Hide()
     end)
-    if not close then
-        close = SBG.ChromeBtn(titleBar, "close", "Close", function()
-            Menu.forceWelcome = false
-            overlay:Hide()
-        end)
-    else
-        close:SetScript("OnClick", function()
-            Menu.forceWelcome = false
-            overlay:Hide()
-        end)
-    end
-    close:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -4, -4)
+    close:SetPoint("RIGHT", -8, 0)
     self.closeBtn = close
 
-    local opt = CreateFrame("Button", nil, titleBar, "UIPanelButtonTemplate")
-    opt:SetSize(80, 22)
-    opt:SetPoint("RIGHT", -8, 0)
-    opt:SetText("Options")
-    opt:SetScript("OnClick", function()
+    local opt = SBG.MakeGlassButton(titleBar, "Options", 78, 24, function()
         Menu.forceWelcome = false
         overlay:Hide()
         if SBG.Options then SBG.Options:Toggle() end
     end)
+    opt:SetPoint("RIGHT", close, "LEFT", -6, 0)
     self.optBtn = opt
 
     self.hint = SBG.MakeText(panel, "GameFontDisableSmall")
-    self.hint:SetPoint("TOPLEFT", 20, -48)
+    self.hint:SetPoint("TOPLEFT", 20, -58)
     self.hint:SetPoint("RIGHT", -20, 0)
     self.hint:SetJustifyH("LEFT")
     self.hint:SetWordWrap(true)
     self.hint:SetText("Choose a guide")
 
     self.welcome = SBG.MakeText(panel, "GameFontHighlight")
-    self.welcome:SetPoint("TOPLEFT", 20, -48)
+    self.welcome:SetPoint("TOPLEFT", 20, -58)
     self.welcome:SetPoint("RIGHT", -20, 0)
     self.welcome:SetJustifyH("LEFT")
     self.welcome:SetWordWrap(true)
@@ -111,45 +94,89 @@ function Menu:Init()
     for i = 1, 6 do
         local row = CreateFrame("Button", nil, panel)
         row:SetHeight(44)
-        row:SetPoint("TOPLEFT", 18, -92 - (i - 1) * 48)
-        row:SetPoint("TOPRIGHT", -18, -92 - (i - 1) * 48)
+        row:SetPoint("TOPLEFT", 18, -96 - (i - 1) * 48)
+        row:SetPoint("TOPRIGHT", -18, -96 - (i - 1) * 48)
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetSize(28, 28)
         row.icon:SetPoint("LEFT", 10, 0)
         row.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+        row.faction = row:CreateTexture(nil, "OVERLAY")
+        row.faction:SetSize(14, 14)
+        row.faction:SetPoint("BOTTOMRIGHT", row.icon, "BOTTOMRIGHT", 3, -3)
+        row.faction:Hide()
+        row.lock = row:CreateTexture(nil, "OVERLAY")
+        row.lock:SetSize(16, 16)
+        row.lock:SetPoint("TOPRIGHT", row.icon, "TOPRIGHT", 2, 2)
+        row.lock:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+        -- Prefer a padlock if present; Pass icon is a clear "blocked" fallback.
+        pcall(function()
+            row.lock:SetTexture("Interface\\Buttons\\LockButton-Locked-Up")
+        end)
+        row.lock:Hide()
+        row.lockBadge = SBG.MakeText(row, "GameFontNormalSmall")
+        row.lockBadge:SetPoint("RIGHT", -12, 0)
+        row.lockBadge:SetText("|cffff5555Locked|r")
+        row.lockBadge:Hide()
         row.name = SBG.MakeText(row, "GameFontNormal")
         row.name:SetPoint("TOPLEFT", 48, -8)
+        row.name:SetPoint("RIGHT", row.lockBadge, "LEFT", -8, 0)
         row.name:SetJustifyH("LEFT")
         row.sub = SBG.MakeText(row, "GameFontHighlightSmall")
         row.sub:SetPoint("TOPLEFT", 48, -24)
+        row.sub:SetPoint("RIGHT", -12, 0)
         row.sub:SetJustifyH("LEFT")
         row:SetScript("OnEnter", function(self)
-            local t = SBG.Theme()
-            if self.bg then self.bg:SetColorTexture(t.hover[1], t.hover[2], t.hover[3], 1) end
+            if self.bg then
+                if self.locked then
+                    self.bg:SetColorTexture(1, 0.35, 0.35, 0.12)
+                else
+                    self.bg:SetColorTexture(1, 1, 1, 0.12)
+                end
+            end
+            if self.locked then
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:AddLine(self.guideName or "Guide", 1, 1, 1)
+                GameTooltip:AddLine(self.lockedReason or "Locked for this character", 1, 0.35, 0.35, true)
+                GameTooltip:Show()
+            end
         end)
         row:SetScript("OnLeave", function(self)
-            SBG.Fill(self, SBG.Theme().bar, 0.55)
+            if self.locked then
+                SBG.Fill(self, { 1, 0.4, 0.4 }, 0.06)
+            else
+                SBG.Fill(self, { 1, 1, 1 }, 0.06)
+            end
+            GameTooltip:Hide()
         end)
-        SBG.Fill(row, SBG.Theme().bar, 0.55)
+        SBG.Fill(row, { 1, 1, 1 }, 0.06)
         self.rows[i] = row
     end
 
     local mini = CreateFrame("Button", "SBGMinimapButton", Minimap)
     mini:SetSize(32, 32)
     mini:SetFrameStrata("MEDIUM")
+    mini:SetFrameLevel(8)
     mini:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -12, -80)
     mini:SetMovable(true)
     mini:RegisterForDrag("LeftButton")
     mini:SetScript("OnDragStart", mini.StartMoving)
     mini:SetScript("OnDragStop", mini.StopMovingOrSizing)
+
+    -- Icon must sit inside the gold ring (≈18–20px), never SetAllPoints on 32x32.
     local mtex = mini:CreateTexture(nil, "ARTWORK")
-    mtex:SetAllPoints()
-    mtex:SetTexture("Interface\\Icons\\INV_Misc_Book_09")
-    mtex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+    mtex:SetSize(18, 18)
+    mtex:SetPoint("CENTER", 0, 1)
+    mtex:SetTexture(SBG.ICON_TEX)
+    mtex:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    mini.icon = mtex
+
     local border = mini:CreateTexture(nil, "OVERLAY")
     border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    border:SetSize(54, 54)
-    border:SetPoint("TOPLEFT", mini, "TOPLEFT", -10, 10)
+    border:SetSize(52, 52)
+    border:SetPoint("TOPLEFT", mini, "TOPLEFT", -9, 9)
+    mini.border = border
+
+    mini:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight", "ADD")
     mini:SetScript("OnClick", function() Menu:Toggle() end)
     mini:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
@@ -165,27 +192,40 @@ end
 
 function Menu:Apply()
     local s = SBG.GetSettings()
-    local t = SBG.Theme()
     local font = SBG.Font()
     if not self.panel then return end
-    self.logo:SetFont(font, 14, "")
-    self.logo:SetTextColor(1, 0.82, 0)
-    self.title:SetFont(font, 13, "")
+    SBG.Paint(self.panel, nil, "glass")
+    if self.titleBar then SBG.StyleGlassChip(self.titleBar, "chip") end
+    if self.brandIcon then
+        self.brandIcon:SetTexture(SBG.ICON_TEX)
+    end
+    self.logo:SetFont(font, s.headerSize or 13, SBG.FontFlags())
+    SBG.ColorSet(self.logo, "title")
+    self.title:SetFont(font, 12, "")
     self.hint:SetFont(font, 11, "")
-    self.hint:SetTextColor(0.8, 0.8, 0.8)
+    SBG.ColorSet(self.hint, "muted")
     if self.welcome then
         self.welcome:SetFont(font, 12, "")
-        self.welcome:SetTextColor(1, 1, 1)
+        SBG.ColorSet(self.welcome, "body")
     end
     for i = 1, #self.rows do
         local row = self.rows[i]
-        SBG.Fill(row, t.bar, 0.55)
-        row.name:SetFont(font, 13, "")
+        SBG.Fill(row, { 1, 1, 1 }, 0.06)
+        row.name:SetFont(font, 13, SBG.FontFlags())
         row.sub:SetFont(font, 11, "")
         SBG.ColorSet(row.name, "text")
         SBG.ColorSet(row.sub, "muted")
     end
+    if self.optBtn and self.optBtn.PaintTheme then self.optBtn:PaintTheme() end
+    if self.closeBtn and self.closeBtn.PaintTheme then self.closeBtn:PaintTheme() end
     if self.minimap then
+        if self.minimap.icon then
+            self.minimap.icon:ClearAllPoints()
+            self.minimap.icon:SetSize(18, 18)
+            self.minimap.icon:SetPoint("CENTER", 0, 1)
+            self.minimap.icon:SetTexture(SBG.ICON_TEX)
+            self.minimap.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+        end
         if s.showMinimapButton then self.minimap:Show() else self.minimap:Hide() end
     end
 end
@@ -196,23 +236,67 @@ function Menu:Refresh()
         table.insert(shown, guide)
     end
     table.sort(shown, function(a, b)
-        return (a.displayname or a.name) < (b.displayname or b.name)
+        if (not a.locked) ~= (not b.locked) then
+            return not a.locked
+        end
+        return (a.subtitle or a.displayname or a.name) < (b.subtitle or b.displayname or b.name)
     end)
     for i, row in ipairs(self.rows) do
         local guide = shown[i]
         if guide then
             row:Show()
+            row.locked = guide.locked and true or false
+            row.guideName = guide.displayname or guide.name
+            row.lockedReason = guide.lockedReason
             row.icon:SetTexture(guide.icon or "Interface\\Icons\\INV_Misc_Book_09")
+            if row.faction then
+                local fac = guide.enabledFor
+                if fac == "Alliance" then
+                    row.faction:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance")
+                    row.faction:SetTexCoord(0.07, 0.60, 0.03, 0.62)
+                    row.faction:Show()
+                elseif fac == "Horde" then
+                    row.faction:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde")
+                    row.faction:SetTexCoord(0.05, 0.58, 0.05, 0.62)
+                    row.faction:Show()
+                else
+                    row.faction:Hide()
+                end
+            end
             row.name:SetText(guide.displayname or guide.name)
-            row.sub:SetText(guide.subtitle or guide.group or "")
-            row:SetScript("OnClick", function()
-                Menu.forceWelcome = false
-                if Menu.welcome then Menu.welcome:Hide() end
-                self.overlay:Hide()
-                SBG.Engine:Load(guide.key, 1)
-            end)
+            if guide.locked then
+                row.sub:SetText((guide.subtitle or "") .. "  ·  wrong faction")
+                row.lock:Show()
+                row.lockBadge:Show()
+                if row.icon.SetDesaturated then row.icon:SetDesaturated(true) end
+                row.icon:SetVertexColor(0.45, 0.45, 0.45, 1)
+                row.name:SetTextColor(0.55, 0.55, 0.55)
+                row.sub:SetTextColor(0.55, 0.35, 0.35)
+                row:SetAlpha(0.85)
+                SBG.Fill(row, { 1, 0.4, 0.4 }, 0.06)
+                row:SetScript("OnClick", function()
+                    SBG.Print(guide.lockedReason or "This guide is locked for your faction.")
+                end)
+            else
+                row.sub:SetText(guide.subtitle or guide.group or "")
+                row.lock:Hide()
+                row.lockBadge:Hide()
+                if row.icon.SetDesaturated then row.icon:SetDesaturated(false) end
+                row.icon:SetVertexColor(1, 1, 1, 1)
+                SBG.ColorSet(row.name, "text")
+                SBG.ColorSet(row.sub, "muted")
+                row:SetAlpha(1)
+                SBG.Fill(row, { 1, 1, 1 }, 0.06)
+                row:SetScript("OnClick", function()
+                    Menu.forceWelcome = false
+                    if Menu.welcome then Menu.welcome:Hide() end
+                    self.overlay:Hide()
+                    SBG.Engine:Load(guide.key, 1)
+                end)
+            end
         else
             row:Hide()
+            row.locked = false
         end
     end
 end

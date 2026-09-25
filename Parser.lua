@@ -233,7 +233,7 @@ function SBG.ParseGuide(content)
     if type(content) ~= "string" then return end
     content = content:gsub("%-%-[^\r\n]*", "")
     local guide = { steps = {} }
-    local skipGuide, skipStep
+    local skipStep
     local current
 
     for raw in string.gmatch(content, "[^\n\r]+") do
@@ -255,7 +255,6 @@ function SBG.ParseGuide(content)
                 local enabled = line:match("^<<%s*(.+)$")
                 if enabled then
                     guide.enabledFor = enabled
-                    if not SBG.Applies(enabled) then skipGuide = true end
                 else
                     local tag, value = line:match("^#(%S+)%s*(.*)$")
                     if tag and value then
@@ -264,12 +263,12 @@ function SBG.ParseGuide(content)
                 end
             end
         end
-        if skipGuide then return end
     end
 
     guide.name = guide.name or "Untitled"
     guide.displayname = guide.displayname or guide.name
-    guide.key = (guide.group or "SBG") .. "|" .. guide.name
+    local keyExtra = guide.enabledFor and ("|" .. guide.enabledFor) or ""
+    guide.key = (guide.group or "SBG") .. "|" .. guide.name .. keyExtra
     guide.icon = guide.icon ~= "" and guide.icon or "Interface\\Icons\\INV_Misc_Book_09"
     return guide
 end

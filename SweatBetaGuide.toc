@@ -2,7 +2,7 @@
 ## Title: Sweat Beta Guide
 ## Notes: In-game leveling and library-book guides for WoW Forever. Type /sbg
 ## Author: Sweat
-## Version: 1.0.0
+## Version: 1.1.0
 ## SavedVariables: SBGDB
 ## SavedVariablesPerCharacter: SBGPC
 

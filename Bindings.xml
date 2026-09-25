@@ -1,0 +1,6 @@
+<Bindings>
+	<!-- Sweat Beta Guide -->
+	<Binding name="SBG_SWEATTARGET" header="SBGHEADER" category="ADDONS">
+		RunMacro("SweatTarget");
+	</Binding>
+</Bindings>

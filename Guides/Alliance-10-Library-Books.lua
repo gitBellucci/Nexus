@@ -1,6 +1,3 @@
-local faction = UnitFactionGroup("player")
-if faction and faction == "Horde" then return end
-
 SBG.RegisterGuide([[
 #name 10 Library Books
 #displayname 10 Library Books

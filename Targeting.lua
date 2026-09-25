@@ -117,10 +117,11 @@ function Targeting:UpdateMacro(queuedTargets)
     end
 
     if content then
-        while #content > 230 do
+        while #content > 200 do
             content = content:gsub("^\n?[^\n]*[\n]*", "")
         end
-        content = content .. "\n/targetlasttarget [dead]"
+        -- Orange circle raid marker (index 2) on whatever we just targeted.
+        content = content .. "\n/script SetRaidTarget(\"target\",2)\n/targetlasttarget [dead]"
     else
         content = "//Sweat - current step has no configured targets"
     end
@@ -162,12 +163,144 @@ function Targeting:Mark(kind, unit, index)
     if not unit then return end
     if UnitIsDead and UnitIsDead(unit) and kind ~= "friendly" then return end
     if UnitIsPlayer and UnitIsPlayer(unit) then return end
-    local id = self:MarkerIndex(kind, index)
+    -- Prefer orange circle (2) for the primary step target; fall back by kind.
+    local id = 2
+    if kind ~= "friendly" and kind ~= "mob" and kind ~= "unitscan" then
+        id = self:MarkerIndex(kind, index) or 2
+    elseif kind == "unitscan" then
+        id = 2
+    elseif kind == "mob" then
+        id = self:MarkerIndex(kind, index) or 2
+    else
+        id = 2 -- friendly / primary: orange circle
+    end
     if not id then return end
     local cur = GetRaidTargetIndex and GetRaidTargetIndex(unit)
     if cur == nil and SetRaidTarget then
         SetRaidTarget(unit, id)
+    elseif cur ~= id and SetRaidTarget and kind == "friendly" then
+        SetRaidTarget(unit, id)
     end
+end
+
+local BINDING_CMD = "SBG_SWEATTARGET"
+
+function Targeting:GetBoundKey()
+    local k1, k2 = GetBindingKey(BINDING_CMD)
+    return k1 or k2
+end
+
+function Targeting:RefreshKeybindButton()
+    local btn = self.keybindBtn
+    if not btn then return end
+    local key = self:GetBoundKey()
+    if key then
+        btn:SetText(key)
+    else
+        btn:SetText("Click to bind")
+    end
+end
+
+function Targeting:ClearKeybind()
+    local k1, k2 = GetBindingKey(BINDING_CMD)
+    if k1 then SetBinding(k1) end
+    if k2 then SetBinding(k2) end
+    pcall(SaveBindings, GetCurrentBindingSet and GetCurrentBindingSet() or 1)
+    self:RefreshKeybindButton()
+    SBG.Print("SweatTarget keybind cleared.")
+end
+
+function Targeting:BindKey(key)
+    if not key or key == "UNKNOWN" or key == "LSHIFT" or key == "RSHIFT"
+        or key == "LCTRL" or key == "RCTRL" or key == "LALT" or key == "RALT"
+        or key == "ESCAPE" then
+        return false
+    end
+    local mod = ""
+    if IsShiftKeyDown() then mod = "SHIFT-" .. mod end
+    if IsControlKeyDown() then mod = "CTRL-" .. mod end
+    if IsAltKeyDown() then mod = "ALT-" .. mod end
+    local full = mod .. key
+    -- Free previous binds for this command
+    local k1, k2 = GetBindingKey(BINDING_CMD)
+    if k1 then SetBinding(k1) end
+    if k2 then SetBinding(k2) end
+    local ok = SetBinding(full, BINDING_CMD)
+    if ok then
+        pcall(SaveBindings, GetCurrentBindingSet and GetCurrentBindingSet() or 1)
+        self:RefreshKeybindButton()
+        SBG.Print("SweatTarget bound to |cffe8b84a" .. full .. "|r")
+        return true
+    end
+    SBG.Print("Could not bind key " .. full)
+    return false
+end
+
+function Targeting:StartKeybindCapture(btn)
+    if InCombat and InCombatLockdown and InCombatLockdown() then
+        SBG.Print("Leave combat to set a keybind.")
+        return
+    end
+    if not self.binder then
+        local b = CreateFrame("Frame", "SBGKeybindCapture", UIParent)
+        b:SetAllPoints(UIParent)
+        b:SetFrameStrata("TOOLTIP")
+        b:EnableMouse(true)
+        b:EnableKeyboard(true)
+        b:Hide()
+        b.hint = b:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        b.hint:SetPoint("CENTER")
+        b.hint:SetText("Press a key to bind SweatTarget\n(Escape to cancel · Right-click to clear)")
+        b.hint:SetTextColor(1, 0.85, 0.35)
+        b.dim = b:CreateTexture(nil, "BACKGROUND")
+        b.dim:SetAllPoints()
+        b.dim:SetColorTexture(0, 0, 0, 0.55)
+        b:SetScript("OnKeyDown", function(self, key)
+            if key == "ESCAPE" then
+                self:Hide()
+                SBG.Print("Keybind cancelled.")
+                return
+            end
+            if Targeting:BindKey(key) then
+                self:Hide()
+            end
+        end)
+        b:SetScript("OnMouseUp", function(self, button)
+            if button == "RightButton" then
+                Targeting:ClearKeybind()
+                self:Hide()
+            end
+        end)
+        pcall(function()
+            if b.SetPropagateKeyboardInput then
+                b:SetScript("OnShow", function(self)
+                    self:EnableKeyboard(true)
+                    self:SetPropagateKeyboardInput(false)
+                end)
+            end
+        end)
+        self.binder = b
+    end
+    if btn then
+        btn:SetText("Press a key…")
+    end
+    self.binder:Show()
+    self.binder:Raise()
+end
+
+function Targeting:Apply()
+    local s = SBG.GetSettings()
+    if not s.enableTargetMacro then
+        if GetMacroInfo(self.macroName) then
+            pcall(DeleteMacro, self.macroName)
+        end
+        self:RefreshKeybindButton()
+        return
+    end
+    if SBG.Engine then
+        self:UpdateFromStep(SBG.Engine:ActiveStep())
+    end
+    self:RefreshKeybindButton()
 end
 
 function Targeting:ScanUnit(unit)
@@ -221,17 +354,7 @@ function Targeting:Init()
     self.frame:SetScript("OnEvent", function(_, event, ...)
         Targeting:OnEvent(event, ...)
     end)
-end
-
-function Targeting:Apply()
-    local s = SBG.GetSettings()
-    if not s.enableTargetMacro then
-        if GetMacroInfo(self.macroName) then
-            pcall(DeleteMacro, self.macroName)
-        end
-        return
-    end
-    if SBG.Engine then
-        self:UpdateFromStep(SBG.Engine:ActiveStep())
-    end
+    -- Binding names for the Key Bindings UI / SetBinding
+    _G.BINDING_HEADER_SBGHEADER = "Sweat Beta Guide"
+    _G.BINDING_NAME_SBG_SWEATTARGET = "Keybind current step target targeting"
 end

@@ -5,39 +5,16 @@ SBG.Options = Options
 
 local BackdropTemplate = BackdropTemplateMixin and "BackdropTemplate" or nil
 
-local function DialogBackdrop(frame)
-    if not frame.SetBackdrop then return end
-    frame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = { left = 11, right = 12, top = 12, bottom = 11 },
-    })
-    frame:SetBackdropColor(0, 0, 0, 1)
-end
-
-local function InsetBackdrop(frame)
-    if not frame.SetBackdrop then return end
-    frame:SetBackdrop({
-        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true,
-        tileSize = 16,
-        edgeSize = 16,
-        insets = { left = 3, right = 3, top = 3, bottom = 3 },
-    })
-    frame:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-    frame:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
-end
-
 local function Header(parent, text)
-    local fs = SBG.MakeText(parent, "GameFontNormal")
+    local wrap = CreateFrame("Frame", nil, parent)
+    wrap:SetSize(520, 26)
+    SBG.StyleGlassChip(wrap, "pill")
+    local fs = SBG.MakeText(wrap, "GameFontNormal")
+    fs:SetPoint("LEFT", 12, 0)
     fs:SetText(text)
-    fs:SetJustifyH("LEFT")
-    fs:SetHeight(20)
-    return fs
+    fs:SetTextColor(0.95, 0.82, 0.35)
+    wrap.label = fs
+    return wrap
 end
 
 local function Toggle(parent, label, key, desc, onChange)
@@ -158,7 +135,7 @@ local THEME_ORDER = { "blue", "red", "gold", "dark", "green" }
 
 function Options:Init()
     local f = CreateFrame("Frame", "SBGOptionsFrame", UIParent, BackdropTemplate)
-    f:SetSize(700, 500)
+    f:SetSize(640, 480)
     f:SetPoint("CENTER")
     f:SetFrameStrata("FULLSCREEN_DIALOG")
     f:SetToplevel(true)
@@ -170,31 +147,29 @@ function Options:Init()
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
     f:Hide()
     self.frame = f
-    DialogBackdrop(f)
+    SBG.Paint(f, nil, "glass")
+    pcall(function() f:SetClipsChildren(true) end)
 
-    local headerTex = f:CreateTexture(nil, "ARTWORK")
-    headerTex:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
-    headerTex:SetSize(360, 64)
-    headerTex:SetPoint("TOP", 0, 12)
-    f.headerTex = headerTex
+    local titleBar = CreateFrame("Frame", nil, f)
+    titleBar:SetPoint("TOPLEFT", 14, -14)
+    titleBar:SetPoint("TOPRIGHT", -14, -14)
+    titleBar:SetHeight(36)
+    f.titleBar = titleBar
+    SBG.StyleGlassChip(titleBar, "chip")
 
-    f.title = SBG.MakeText(f, "GameFontNormal")
-    f.title:SetPoint("TOP", headerTex, "TOP", 0, -14)
+    f.brandIcon = titleBar:CreateTexture(nil, "ARTWORK")
+    f.brandIcon:SetSize(22, 22)
+    f.brandIcon:SetPoint("LEFT", 12, 0)
+    f.brandIcon:SetTexture(SBG.ICON_TEX)
+    f.brandIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+    f.title = SBG.MakeText(titleBar, "GameFontNormal")
+    f.title:SetPoint("LEFT", f.brandIcon, "RIGHT", 8, 0)
     f.title:SetText("Sweat Beta Guide")
+    f.title:SetTextColor(1, 0.85, 0.35)
 
-    local close
-    pcall(function()
-        close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
-    end)
-    if not close then
-        close = CreateFrame("Button", nil, f)
-        close:SetSize(32, 32)
-        close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-        close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-        close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
-    end
-    close:SetPoint("TOPRIGHT", -4, -4)
-    close:SetScript("OnClick", function() f:Hide() end)
+    local close = SBG.MakeGlassButton(titleBar, "X", 28, 24, function() f:Hide() end)
+    close:SetPoint("RIGHT", -8, 0)
     f.close = close
 
     local tabNames = {
@@ -204,35 +179,22 @@ function Options:Init()
     }
     self.tabs = {}
     for i, info in ipairs(tabNames) do
-        local tab = CreateFrame("Button", "SBGOptTab" .. i, f, BackdropTemplate)
-        tab:SetSize(128, 24)
-        tab:SetNormalFontObject(GameFontNormalSmall)
-        tab:SetHighlightFontObject(GameFontHighlightSmall)
-        tab:SetText(info.name)
-        if tab.SetBackdrop then
-            tab:SetBackdrop({
-                bgFile = "Interface\\Buttons\\WHITE8X8",
-                edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-                edgeSize = 12,
-                insets = { left = 3, right = 3, top = 3, bottom = 3 },
-            })
-            tab:SetBackdropColor(0.1, 0.1, 0.12, 1)
-            tab:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
-        end
+        local tab = SBG.MakeGlassButton(f, info.name, 128, 26, function()
+            Options:ShowCat(info.id)
+        end)
         if i == 1 then
-            tab:SetPoint("TOPLEFT", 16, -40)
+            tab:SetPoint("TOPLEFT", 16, -58)
         else
-            tab:SetPoint("LEFT", self.tabs[i - 1], "RIGHT", 4, 0)
+            tab:SetPoint("LEFT", self.tabs[i - 1], "RIGHT", 6, 0)
         end
         tab.cat = info.id
-        tab:SetScript("OnClick", function() Options:ShowCat(info.id) end)
         self.tabs[i] = tab
     end
 
     local body = CreateFrame("Frame", nil, f, BackdropTemplate)
-    body:SetPoint("TOPLEFT", 18, -68)
-    body:SetPoint("BOTTOMRIGHT", -18, 16)
-    InsetBackdrop(body)
+    body:SetPoint("TOPLEFT", 16, -92)
+    body:SetPoint("BOTTOMRIGHT", -16, 16)
+    SBG.Paint(body, nil, "pane")
     f.body = body
 
     local scroll = CreateFrame("ScrollFrame", "SBGOptionsScroll", body, "UIPanelScrollFrameTemplate")
@@ -240,7 +202,7 @@ function Options:Init()
     scroll:SetPoint("BOTTOMRIGHT", -28, 8)
     f.scroll = scroll
     local child = CreateFrame("Frame", nil, scroll)
-    child:SetSize(620, 800)
+    child:SetSize(560, 800)
     scroll:SetScrollChild(child)
     f.child = child
 
@@ -292,10 +254,7 @@ function Options:Init()
         profile:SetHeight(20)
         profile:SetJustifyH("LEFT")
         p.profile = profile
-        local reset = CreateFrame("Button", nil, p, "UIPanelButtonTemplate")
-        reset:SetSize(140, 22)
-        reset:SetText("Reset Profile")
-        reset:SetScript("OnClick", function()
+        local reset = SBG.MakeGlassButton(p, "Reset Profile", 140, 24, function()
             local name = SBGDB.currentProfile or "Default"
             SBGDB.profiles[name] = { themeMigrated = true, theme = "blue" }
             SBG.EnsureDB()
@@ -316,10 +275,7 @@ function Options:Init()
         local themeCap = SBG.MakeText(themeRow, "GameFontHighlight")
         themeCap:SetPoint("LEFT", 4, 0)
         themeCap:SetText("Choose Theme")
-        local themeBtn = CreateFrame("Button", "SBGThemeDrop", themeRow, "UIPanelButtonTemplate")
-        themeBtn:SetSize(180, 22)
-        themeBtn:SetPoint("LEFT", 160, 0)
-        themeBtn:SetScript("OnClick", function()
+        local themeBtn = SBG.MakeGlassButton(themeRow, "Sweat Blue", 180, 24, function(btn)
             local items = {}
             for _, id in ipairs(THEME_ORDER) do
                 local th = SBG.Themes[id]
@@ -332,22 +288,31 @@ function Options:Init()
                     end,
                 })
             end
-            SBG.ShowDrop(items, themeBtn)
+            SBG.ShowDrop(items, btn)
         end)
+        themeBtn:SetPoint("LEFT", 160, 0)
         p.themeBtn = themeBtn
         self.themeBtn = themeBtn
 
         local gh = Header(p, "Guide Window")
         local scale = Range(p, "Window Scale", "scale", 0.2, 2, 0.05,
-            "Scale of the main window. Alt+drag the corner to resize.",
+            "Scale of the main window. Drag the corner to resize.",
             function(n) if SBG.UI.frame then SBG.UI.frame:SetScale(n) end end,
             function() SBG.ApplyAll() end)
-        local font = Range(p, "Guide Font Size", "fontSize", 9, 18, 1,
-            "Change font size of the Guide Window",
+        local fontSz = Range(p, "Step Font Size", "fontSize", 9, 18, 1,
+            "Font size of step text in the guide window",
+            nil, function() SBG.ApplyAll() end)
+        local titleSz = Range(p, "Guide Title Size", "titleSize", 10, 18, 1,
+            "Font size of the guide name in the header",
+            nil, function() SBG.ApplyAll() end)
+        local headSz = Range(p, "Menu Title Size", "headerSize", 11, 18, 1,
+            "Font size of titles in the guide selector / options",
             nil, function() SBG.ApplyAll() end)
         local opac = Range(p, "Window Opacity", "opacity", 0.4, 1, 0.05,
             "Background opacity of the guide window",
             nil, function() SBG.ApplyAll() end)
+        local outline = Toggle(p, "Font outline", "fontOutline",
+            "Add a black outline to guide text for readability", function() SBG.ApplyAll() end)
 
         local ah = Header(p, "Waypoint Arrow")
         local arrow = Range(p, "Arrow Scale", "arrowScale", 0.2, 2, 0.05,
@@ -359,8 +324,9 @@ function Options:Init()
         local pin = Toggle(p, "Show minimap pin", "showPin",
             "Show the waypoint pin on the minimap", function() SBG.ApplyAll() end)
 
-        layout(p, { h, themeRow, gh, scale, font, opac, ah, arrow, mh, pin })
-        self.scale, self.fontSize, self.opacity = scale, font, opac
+        layout(p, { h, themeRow, gh, scale, fontSz, titleSz, headSz, opac, outline, ah, arrow, mh, pin })
+        self.scale, self.fontSize, self.titleSize, self.headerSize = scale, fontSz, titleSz, headSz
+        self.opacity, self.fontOutline = opac, outline
         self.arrowScale, self.showPin = arrow, pin
     end
 
@@ -378,7 +344,30 @@ function Options:Init()
             "Set raid markers on NPCs from .mob lines")
         local markU = Toggle(p, "Mark unitscan targets", "enableEnemyMarking",
             "Set raid markers on NPCs from .unitscan lines")
-        layout(p, { h, macro, notify, markF, markM, markU })
+
+        -- Keybind button row
+        local kbRow = CreateFrame("Frame", nil, p)
+        kbRow:SetSize(520, 26)
+        local kbLabel = SBG.MakeText(kbRow, "GameFontHighlight")
+        kbLabel:SetPoint("LEFT", 0, 0)
+        kbLabel:SetText("Keybind current step target targeting")
+        local kbBtn = SBG.MakeGlassButton(kbRow, "Click to bind", 140, 22, function(self)
+            if SBG.Targeting then SBG.Targeting:StartKeybindCapture(self) end
+        end)
+        kbBtn:SetPoint("RIGHT", kbRow, "RIGHT", 0, 0)
+        kbBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:AddLine("Keybind current step target targeting", 1, 1, 1)
+            GameTooltip:AddLine("Press a key to bind · Right-click the overlay to clear", 0.8, 0.8, 0.8, true)
+            GameTooltip:Show()
+        end)
+        kbBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        -- Store reference so we can refresh the button label
+        if SBG.Targeting then SBG.Targeting.keybindBtn = kbBtn end
+        kbRow.kbBtn = kbBtn
+        self.kbRow = kbRow
+
+        layout(p, { h, macro, notify, markF, markM, markU, kbRow })
         self.enableTargetMacro, self.notifyOnTargetUpdates = macro, notify
         self.enableTargetMarking, self.enableMobMarking, self.enableEnemyMarking = markF, markM, markU
     end
@@ -395,12 +384,13 @@ function Options:ShowCat(id)
     for i = 1, #self.tabs do
         local b = self.tabs[i]
         local selected = b.cat == id
+        local t = SBG.Theme()
         if selected then
-            b:SetNormalFontObject(GameFontHighlightSmall)
-            if b.SetBackdropColor then b:SetBackdropColor(0.2, 0.2, 0.22, 1) end
+            local hov = t.hover
+            if b.chipVeil then b.chipVeil:SetColorTexture(hov[1], hov[2], hov[3], 0.50) end
+            if b.label then b.label:SetTextColor(1, 1, 1) end
         else
-            b:SetNormalFontObject(GameFontNormalSmall)
-            if b.SetBackdropColor then b:SetBackdropColor(0.1, 0.1, 0.12, 1) end
+            if b.PaintTheme then b:PaintTheme() end
         end
     end
     local p = self.pages[id]
@@ -413,6 +403,14 @@ end
 function Options:Apply()
     local f = self.frame
     if not f or not f.title then return end
+    local s = SBG.GetSettings()
+    SBG.Paint(f, nil, "glass")
+    if f.titleBar then SBG.StyleGlassChip(f.titleBar, "chip") end
+    if f.body then SBG.Paint(f.body, nil, "pane") end
+    if f.brandIcon then f.brandIcon:SetTexture(SBG.ICON_TEX) end
+    local font = SBG.Font()
+    f.title:SetFont(font, s.headerSize or 13, SBG.FontFlags())
+    SBG.ColorSet(f.title, "title")
     if self.themeBtn then
         local th = SBG.Theme()
         self.themeBtn:SetText(th.name)
@@ -422,13 +420,22 @@ function Options:Apply()
     end
     local paint = {
         self.lock, self.mini, self.hideArrow, self.autoAdvance,
-        self.scale, self.fontSize, self.opacity, self.arrowScale, self.showPin,
+        self.scale, self.fontSize, self.titleSize, self.headerSize,
+        self.opacity, self.fontOutline, self.arrowScale, self.showPin,
         self.enableTargetMacro, self.notifyOnTargetUpdates,
         self.enableTargetMarking, self.enableMobMarking, self.enableEnemyMarking,
     }
     for i = 1, #paint do
         if paint[i] and paint[i].Paint then paint[i]:Paint() end
     end
+    if self.themeBtn and self.themeBtn.PaintTheme then self.themeBtn:PaintTheme() end
+    if f.close and f.close.PaintTheme then f.close:PaintTheme() end
+    for i = 1, #(self.tabs or {}) do
+        if self.tabs[i].PaintTheme then self.tabs[i]:PaintTheme() end
+    end
+    if self.cat then self:ShowCat(self.cat) end
+    -- Refresh keybind button label
+    if SBG.Targeting then SBG.Targeting:RefreshKeybindButton() end
 end
 
 function Options:Toggle()

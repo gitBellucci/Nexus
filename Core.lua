@@ -92,7 +92,12 @@ end
 function SBG.RegisterGuide(content)
     local guide = SBG.ParseGuide(content)
     if not guide then return end
-    if guide.enabledFor and not SBG.Applies(guide.enabledFor) then return end
+    if guide.enabledFor and not SBG.Applies(guide.enabledFor) then
+        guide.locked = true
+        guide.lockedReason = "Requires " .. guide.enabledFor
+    else
+        guide.locked = false
+    end
     table.insert(SBG.guides, guide)
     SBG.guideByKey[guide.key] = guide
 end
@@ -133,15 +138,27 @@ local function Dispatch(event, ...)
         SBG.Print("Type |cffe8b84a/sbg|r for guides, |cffe8b84a/sbg opt|r for settings.")
     elseif event == "PLAYER_LOGIN" then
         RefreshPlayer()
-        if SBGPC.guideKey and SBG.guideByKey[SBGPC.guideKey] then
-            SBG.Engine:Load(SBGPC.guideKey, SBGPC.stepIndex or 1)
+        local key = SBGPC.guideKey
+        if key and not SBG.guideByKey[key] then
+            for _, g in ipairs(SBG.guides) do
+                if not g.locked and g.name and key:find(g.name, 1, true) then
+                    key = g.key
+                    SBGPC.guideKey = key
+                    break
+                end
+            end
+        end
+        if key and SBG.guideByKey[key] and not SBG.guideByKey[key].locked then
+            SBG.Engine:Load(key, SBGPC.stepIndex or 1)
         end
     elseif event == "PLAYER_ENTERING_WORLD" then
         if SBG.welcomeTried then return end
         SBG.welcomeTried = true
-        if SBGPC.guideKey and SBG.guideByKey[SBGPC.guideKey] then return end
+        local key = SBGPC.guideKey
+        if key and SBG.guideByKey[key] and not SBG.guideByKey[key].locked then return end
         After(1.25, function()
-            if SBGPC.guideKey and SBG.guideByKey[SBGPC.guideKey] then return end
+            local k = SBGPC.guideKey
+            if k and SBG.guideByKey[k] and not SBG.guideByKey[k].locked then return end
             if SBG.Menu and SBG.Menu.ShowWelcome then SBG.Menu:ShowWelcome() end
         end)
     end
