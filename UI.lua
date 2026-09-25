@@ -125,20 +125,26 @@ function UI:Init()
 
     local function dragStart(_, button, resize)
         if SBG.GetSettings().lockFrames then return end
+        -- Classic Forever has no Frame:IsMoving(); track with f.moving instead.
         if resize then
-            if f:IsMoving() then f:StopMovingOrSizing() end
-            if not f.sizing then
+            if f.moving then
+                f.moving = false
+                f:StopMovingOrSizing()
+            end
+            if not f.sizing and f.StartSizing then
                 f.sizing = true
                 f:StartSizing("BOTTOMRIGHT")
             end
         else
-            -- Guard: if already moving (e.g. parent OnMouseDown already called this),
-            -- do nothing — prevents the grab-offset snap caused by double StartMoving().
-            if f:IsMoving() or f.sizing then return end
+            -- Guard against double StartMoving() (grab-offset snap).
+            if f.moving or f.sizing then return end
+            if not f.StartMoving then return end
+            f.moving = true
             f:StartMoving()
         end
     end
     local function dragStop()
+        f.moving = false
         f:StopMovingOrSizing()
         if f.sizing then
             local st = SBG.GetSettings()
