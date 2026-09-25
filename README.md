@@ -1,8 +1,14 @@
 # Sweat Beta Guide
 
+<p align="center">
+  <img src="Media/addon-icon.png" alt="Sweat Beta Guide" width="192" height="192" />
+</p>
+
 In-game leveling and library-book guides for **WoW Forever** (Classic Beta).
 
 Includes full step-by-step routes with waypoint navigation, flight paths, target marking, and map pins.
+
+**Version:** 1.0.0 · **Commands:** `/sbg` · `/sweat`
 
 ---
 
