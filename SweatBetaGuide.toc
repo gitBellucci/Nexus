@@ -23,6 +23,5 @@ Options.lua
 Menu.lua
 Targeting.lua
 
-Guides\Horde-1-10-Warrior.lua
 Guides\Horde-10-Library-Books.lua
 Guides\Alliance-10-Library-Books.lua

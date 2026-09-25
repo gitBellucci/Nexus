@@ -10,7 +10,6 @@ Includes full step-by-step routes with waypoint navigation, flight paths, target
 
 - **10 Library Books (Alliance)**: Full route starting from Stormwind to Elwynn, Westfall, Duskwood, Ironforge, Loch Modan, Wetlands, Darkshore, Ashenvale, and The Barrens to unlock *Friend of the Library* and your neck piece (*Amulet of the Scholar* / *Pendant of Erudition*).
 - **10 Library Books (Horde)**: Full route starting from Crossroads to Sludge Fen, Ratchet, Lushwater Oasis, Stonetalon Mountains, Orgrimmar, Brill, Undercity, Ambermill, and Stranglethorn Vale / Westfall / Duskwood / Elwynn.
-- **Warrior 1–10 (Horde)**: Durotar route from the Valley of Trials through Razor Hill.
 
 ---
 
