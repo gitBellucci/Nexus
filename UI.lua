@@ -587,7 +587,7 @@ function UI:Apply()
     SBG.ColorSet(f.footText, "muted")
 
     for i = 1, MAX_EL do
-        f.current.elements[i].text:SetFont(font, fs + 1, flags)
+        f.current.elements[i].text:SetFont(font, fs, flags)
         SBG.ColorSet(f.current.elements[i].text, "body")
     end
     for i = 1, MAX_STEPS do
