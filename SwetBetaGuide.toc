@@ -1,0 +1,28 @@
+## Interface: 16001, 11509
+## Title: Sweat Beta Guide
+## Notes: In-game leveling and library-book guides for WoW Forever. Type /sbg
+## Author: Sweat
+## Version: 1.0.0
+## SavedVariables: SBGDB
+## SavedVariablesPerCharacter: SBGPC
+
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+libs\HereBeDragons\HereBeDragons-2.0.lua
+
+Core.lua
+DB.lua
+Theme.lua
+Widgets.lua
+Parser.lua
+Engine.lua
+Arrow.lua
+Pins.lua
+UI.lua
+Options.lua
+Menu.lua
+Targeting.lua
+
+Guides\Horde-1-10-Warrior.lua
+Guides\Horde-10-Library-Books.lua
+Guides\Alliance-10-Library-Books.lua
