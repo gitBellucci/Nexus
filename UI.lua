@@ -127,14 +127,14 @@ function UI:Init()
         if SBG.GetSettings().lockFrames then return end
         if resize then
             if f:IsMoving() then f:StopMovingOrSizing() end
-            if not f:IsSizing() then
+            if not f.sizing then
                 f.sizing = true
                 f:StartSizing("BOTTOMRIGHT")
             end
         else
             -- Guard: if already moving (e.g. parent OnMouseDown already called this),
             -- do nothing — prevents the grab-offset snap caused by double StartMoving().
-            if f:IsMoving() or f:IsSizing() then return end
+            if f:IsMoving() or f.sizing then return end
             f:StartMoving()
         end
     end
