@@ -3,7 +3,7 @@ SBG.RegisterGuide([[
 #displayname 10 Library Books
 #subtitle Alliance · Stormwind start · necklace
 #icon Interface/Icons/INV_Misc_Book_09
-#group Sweat Beta Guide
+#group Nexus
 << Alliance
 
 step

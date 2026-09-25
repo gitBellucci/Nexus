@@ -1,6 +1,6 @@
 <Bindings>
-	<!-- Sweat Beta Guide -->
+	<!-- Nexus -->
 	<Binding name="SBG_SWEATTARGET" header="SBGHEADER" category="ADDONS">
-		RunMacro("SweatTarget");
+		RunMacro("NexusTarget");
 	</Binding>
 </Bindings>

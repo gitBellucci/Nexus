@@ -165,7 +165,7 @@ function Options:Init()
 
     f.title = SBG.MakeText(titleBar, "GameFontNormal")
     f.title:SetPoint("LEFT", f.brandIcon, "RIGHT", 8, 0)
-    f.title:SetText("Sweat Beta Guide")
+    f.title:SetText("Nexus")
     f.title:SetTextColor(1, 0.85, 0.35)
 
     local close = SBG.MakeGlassButton(titleBar, "X", 28, 24, function() f:Hide() end)
@@ -231,7 +231,7 @@ function Options:Init()
         local lock = Toggle(p, "Lock Frames", "lockFrames",
             "Disable dragging the guide window", function() SBG.ApplyAll() end)
         local mini = Toggle(p, "Enable Minimap Button", "showMinimapButton",
-            "Show the Sweat button on the minimap", function() SBG.ApplyAll() end)
+            "Show the Nexus button on the minimap", function() SBG.ApplyAll() end)
         local hide = Toggle(p, "Hide waypoint arrow", "hideArrow",
             "Hide the direction arrow", function(v)
                 SBG.GetSettings().showArrow = not v
@@ -275,7 +275,7 @@ function Options:Init()
         local themeCap = SBG.MakeText(themeRow, "GameFontHighlight")
         themeCap:SetPoint("LEFT", 4, 0)
         themeCap:SetText("Choose Theme")
-        local themeBtn = SBG.MakeGlassButton(themeRow, "Sweat Blue", 180, 24, function(btn)
+        local themeBtn = SBG.MakeGlassButton(themeRow, "Nexus Blue", 180, 24, function(btn)
             local items = {}
             for _, id in ipairs(THEME_ORDER) do
                 local th = SBG.Themes[id]
@@ -334,7 +334,7 @@ function Options:Init()
         local p = page("targeting")
         local h = Header(p, "Targeting")
         local macro = Toggle(p, "Automatically create a targeting macro", "enableTargetMacro",
-            "Creates the account macro SweatTarget and updates it from the current step",
+            "Creates the account macro NexusTarget and updates it from the current step",
             function() if SBG.Targeting then SBG.Targeting:Apply() end end)
         local notify = Toggle(p, "Notify on targeting macro updates", "notifyOnTargetUpdates",
             "Print a chat message when the targeting macro changes")

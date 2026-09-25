@@ -70,7 +70,7 @@ end
 
 function UI:HeaderMenu()
     local items = {
-        { text = "SWEAT", isTitle = true },
+        { text = "NEXUS", isTitle = true },
         { text = "Select another guide", func = function()
             if SBG.Menu then SBG.Menu:Toggle() end
         end },
@@ -154,10 +154,11 @@ function UI:Init()
         end
     end
     f:RegisterForDrag("LeftButton")
+    f:SetScript("OnDragStart", function() dragStart(nil, "LeftButton") end)
+    f:SetScript("OnDragStop", dragStop)
     f:SetScript("OnMouseDown", function(_, button)
-        if button == "RightButton" then UI:HeaderMenu() else dragStart(_, button) end
+        if button == "RightButton" then UI:HeaderMenu() end
     end)
-    f:SetScript("OnMouseUp", dragStop)
     -- Live reflow while the resize grip is held (Details-style).
     f:SetScript("OnSizeChanged", function(self)
         if not self.sizing or self._layoutLock then return end
@@ -226,10 +227,11 @@ function UI:Init()
     current:SetHeight(56)
     current:EnableMouse(true)
     current:RegisterForDrag("LeftButton")
+    current:SetScript("OnDragStart", function() dragStart(nil, "LeftButton") end)
+    current:SetScript("OnDragStop", dragStop)
     current:SetScript("OnMouseDown", function(_, button)
-        if button == "RightButton" then UI:HeaderMenu() else dragStart(nil, button) end
+        if button == "RightButton" then UI:HeaderMenu() end
     end)
-    current:SetScript("OnMouseUp", dragStop)
     f.current = current
     SBG.Paint(current, nil, "glass")
 
@@ -361,10 +363,11 @@ function UI:Init()
     footer:SetFrameLevel(10)
     footer:EnableMouse(true)
     footer:RegisterForDrag("LeftButton")
+    footer:SetScript("OnDragStart", function() dragStart(nil, "LeftButton") end)
+    footer:SetScript("OnDragStop", dragStop)
     footer:SetScript("OnMouseDown", function(_, button)
-        if button == "RightButton" then UI:HeaderMenu() else dragStart(nil, button) end
+        if button == "RightButton" then UI:HeaderMenu() end
     end)
-    footer:SetScript("OnMouseUp", dragStop)
     f.footer = footer
     SBG.Paint(footer, nil, "clear")
 
@@ -391,7 +394,7 @@ function UI:Init()
     f.footText:SetPoint("LEFT", 20, 0)
     f.footText:SetPoint("RIGHT", -18, 0)
     f.footText:SetJustifyH("LEFT")
-    f.footText:SetText("Sweat Beta Guide")
+    f.footText:SetText("Nexus")
 
     local grab = CreateFrame("Button", nil, f)
     grab:SetSize(16, 16)
@@ -624,7 +627,7 @@ function UI:Refresh()
     f.current.badge:SetHeight(22)
     self:PaintStepBadge()
     self:SetGuideIcon(guide)
-    f.footText:SetText(string.format("Sweat  %d / %d", index, total))
+    f.footText:SetText(string.format("Nexus  %d / %d", index, total))
 
     local shown = 0
     local height = 40 -- badge row reserved above content (6px top + 22px badge + 8px gap + 4px pad)

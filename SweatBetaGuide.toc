@@ -1,7 +1,7 @@
 ## Interface: 16001, 11509
-## Title: Sweat Beta Guide
-## Notes: In-game leveling and library-book guides for WoW Forever. Type /sbg
-## Author: Sweat
+## Title: Nexus
+## Notes: In-game leveling and library-book guides for WoW Forever. Type /nexus or /sbg
+## Author: Nexus
 ## Version: 1.1.0
 ## SavedVariables: SBGDB
 ## SavedVariablesPerCharacter: SBGPC

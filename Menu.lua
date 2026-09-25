@@ -55,7 +55,7 @@ function Menu:Init()
 
     self.logo = SBG.MakeText(titleBar, "GameFontNormal")
     self.logo:SetPoint("LEFT", self.brandIcon, "RIGHT", 8, 0)
-    self.logo:SetText("Sweat Beta Guide")
+    self.logo:SetText("Nexus")
 
     self.title = SBG.MakeText(titleBar, "GameFontHighlight")
     self.title:SetPoint("LEFT", self.logo, "RIGHT", 10, 0)
@@ -180,7 +180,7 @@ function Menu:Init()
     mini:SetScript("OnClick", function() Menu:Toggle() end)
     mini:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:AddLine("Sweat Beta Guide", 0.91, 0.72, 0.29)
+        GameTooltip:AddLine("Nexus", 0.91, 0.72, 0.29)
         GameTooltip:AddLine("Click to pick a guide", 0.8, 0.8, 0.8)
         GameTooltip:AddLine("Right-click the viewer header for more", 0.6, 0.6, 0.6)
         GameTooltip:Show()
@@ -306,7 +306,7 @@ function Menu:ShowWelcome()
     self.forceWelcome = true
     self:Refresh()
     if self.welcome then
-        self.welcome:SetText("Welcome to Sweat Beta Guide.\nThis character has no guide yet — pick one to start leveling.")
+        self.welcome:SetText("Welcome to Nexus.\nThis character has no guide yet — pick one to start leveling.")
         self.welcome:Show()
         self.welcome:SetHeight(36)
     end

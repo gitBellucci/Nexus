@@ -31,7 +31,7 @@ SBG.Defaults = {
 -- Themes tint the shared liquid-glass art (veil / edges / accents). Texture stays the same.
 SBG.Themes = {
     blue = {
-        name = "Sweat Blue",
+        name = "Nexus Blue",
         bg = { 0.05, 0.06, 0.10 },
         bar = { 0.08, 0.09, 0.14 },
         hover = { 0.22, 0.32, 0.55 },
@@ -45,7 +45,7 @@ SBG.Themes = {
         title = { 0.70, 0.82, 1.00 },
     },
     red = {
-        name = "Sweat Red",
+        name = "Nexus Red",
         bg = { 0.08, 0.02, 0.02 },
         bar = { 0.12, 0.04, 0.04 },
         hover = { 0.48, 0.14, 0.12 },
@@ -59,7 +59,7 @@ SBG.Themes = {
         title = { 1.00, 0.55, 0.42 },
     },
     gold = {
-        name = "Sweat Gold",
+        name = "Nexus Gold",
         bg = { 0.08, 0.05, 0.01 },
         bar = { 0.12, 0.08, 0.02 },
         hover = { 0.45, 0.30, 0.08 },
@@ -87,7 +87,7 @@ SBG.Themes = {
         title = { 0.92, 0.92, 0.94 },
     },
     green = {
-        name = "Sweat Green",
+        name = "Nexus Green",
         bg = { 0.02, 0.07, 0.04 },
         bar = { 0.04, 0.10, 0.06 },
         hover = { 0.08, 0.36, 0.20 },
