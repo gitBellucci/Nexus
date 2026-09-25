@@ -164,10 +164,10 @@ function SBG.MakeText(parent, template)
     return parent:CreateFontString(nil, "OVERLAY", template or "GameFontNormal")
 end
 
-SBG.GLASS_TEX = "Interface\\AddOns\\SwetBetaGuide\\Media\\glass"
-SBG.GLASS_CHIP = "Interface\\AddOns\\SwetBetaGuide\\Media\\glasschip"
-SBG.GLASS_PILL = "Interface\\AddOns\\SwetBetaGuide\\Media\\glasspill"
-SBG.ICON_TEX = "Interface\\AddOns\\SwetBetaGuide\\Textures\\icon"
+SBG.GLASS_TEX = "Interface\\AddOns\\Nexus\\Media\\glass"
+SBG.GLASS_CHIP = "Interface\\AddOns\\Nexus\\Media\\glasschip"
+SBG.GLASS_PILL = "Interface\\AddOns\\Nexus\\Media\\glasspill"
+SBG.ICON_TEX = "Interface\\AddOns\\Nexus\\Textures\\icon"
 
 -- Rounded liquid-glass bar (header / chips). Transparent corners = soft round look.
 function SBG.StyleGlassChip(frame, which)
