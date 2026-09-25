@@ -1,14 +1,14 @@
-# Sweat Beta Guide
+# Nexus
 
 <p align="center">
-  <img src="Media/addon-icon.png" alt="Sweat Beta Guide" width="192" height="192" />
+  <img src="Media/addon-icon.png" alt="Nexus" width="192" height="192" />
 </p>
 
-In-game leveling and library-book guides for **WoW Forever** (Classic Beta).
+In-game leveling and library-book guides for **WoW Forever**.
 
 Includes full step-by-step routes with waypoint navigation, flight paths, target marking, and map pins.
 
-**Version:** 1.0.0 · **Commands:** `/sbg` · `/sweat`
+**Version:** 1.1.0 · **Command:** `/nexus`
 
 ---
 
@@ -23,8 +23,8 @@ Includes full step-by-step routes with waypoint navigation, flight paths, target
 
 - **Navigation Waypoint Arrow**: Dynamic 3D directional arrow with distance indicator to your next objective.
 - **Minimap & World Map Pins**: Live map pins showing your target locations (powered by HereBeDragons).
-- **Targeting & Macros**: Automatic targeting assistance (`/sbg` targeting macro) and unit marking.
-- **Custom Themes & Styles**: Clean UI with Sweat themes (Blue, Red, Gold, Dark Mode), resizable window, and font customization.
+- **Targeting & Macros**: Automatic targeting assistance (`NexusTarget` macro) and unit marking.
+- **Custom Themes & Styles**: Liquid-glass UI with Nexus themes (Blue, Red, Gold, Dark Mode, Green), resizable window, and font customization.
 - **Faction Auto-Detection**: Displays guides tailored to your character's faction.
 
 ---
@@ -33,18 +33,18 @@ Includes full step-by-step routes with waypoint navigation, flight paths, target
 
 1. Download or clone this repository into your WoW AddOns folder:
    ```
-   World of Warcraft\_classic_beta_\Interface\AddOns\SwetBetaGuide
+   World of Warcraft\_classic_beta_\Interface\AddOns\Nexus
    ```
-2. Ensure the folder is named **`SwetBetaGuide`** (or `SweatBetaGuide`).
+2. Ensure the folder is named **`Nexus`**.
 3. Launch or restart WoW (or type `/reload` if already running).
-4. Ensure **Sweat Beta Guide** is enabled in your AddOns menu.
+4. Ensure **Nexus** is enabled in your AddOns menu.
 
 ---
 
 ## Commands
 
-- `/sbg` or `/sweat` — Open the guide selection menu
-- `/sbg opt` — Open options and theme customization
-- `/sbg reset` — Reset current guide to step 1
-- `/sbg show` / `/sbg hide` — Toggle the guide frame
-- `/sbg arrow` — Reset waypoint arrow to top center
+- `/nexus` — Open the guide selection menu
+- `/nexus opt` — Open options and theme customization
+- `/nexus reset` — Reset current guide to step 1
+- `/nexus show` / `/nexus hide` — Toggle the guide frame
+- `/nexus arrow` — Reset waypoint arrow to top center

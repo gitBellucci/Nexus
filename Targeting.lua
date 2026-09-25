@@ -8,8 +8,8 @@ local function wipe(t)
     return t
 end
 
-Targeting.macroName = "SweatTarget"
-Targeting.followMacroName = "SweatFollow"
+Targeting.macroName = "NexusTarget"
+Targeting.followMacroName = "NexusFollow"
 
 local targetList, mobList, unitscanList = {}, {}, {}
 local announced, queued = {}, {}
@@ -123,7 +123,7 @@ function Targeting:UpdateMacro(queuedTargets)
         -- Orange circle raid marker (index 2) on whatever we just targeted.
         content = content .. "\n/script SetRaidTarget(\"target\",2)\n/targetlasttarget [dead]"
     else
-        content = "//Sweat - current step has no configured targets"
+        content = "//Nexus - current step has no configured targets"
     end
 
     EditMacro(self.macroName, self.macroName, nil, content)
@@ -207,7 +207,7 @@ function Targeting:ClearKeybind()
     if k2 then SetBinding(k2) end
     pcall(SaveBindings, GetCurrentBindingSet and GetCurrentBindingSet() or 1)
     self:RefreshKeybindButton()
-    SBG.Print("SweatTarget keybind cleared.")
+    SBG.Print("NexusTarget keybind cleared.")
 end
 
 function Targeting:BindKey(key)
@@ -229,7 +229,7 @@ function Targeting:BindKey(key)
     if ok then
         pcall(SaveBindings, GetCurrentBindingSet and GetCurrentBindingSet() or 1)
         self:RefreshKeybindButton()
-        SBG.Print("SweatTarget bound to |cffe8b84a" .. full .. "|r")
+        SBG.Print("NexusTarget bound to |cffe8b84a" .. full .. "|r")
         return true
     end
     SBG.Print("Could not bind key " .. full)
@@ -250,7 +250,7 @@ function Targeting:StartKeybindCapture(btn)
         b:Hide()
         b.hint = b:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
         b.hint:SetPoint("CENTER")
-        b.hint:SetText("Press a key to bind SweatTarget\n(Escape to cancel · Right-click to clear)")
+        b.hint:SetText("Press a key to bind NexusTarget\n(Escape to cancel · Right-click to clear)")
         b.hint:SetTextColor(1, 0.85, 0.35)
         b.dim = b:CreateTexture(nil, "BACKGROUND")
         b.dim:SetAllPoints()
@@ -355,6 +355,6 @@ function Targeting:Init()
         Targeting:OnEvent(event, ...)
     end)
     -- Binding names for the Key Bindings UI / SetBinding
-    _G.BINDING_HEADER_SBGHEADER = "Sweat Beta Guide"
+    _G.BINDING_HEADER_SBGHEADER = "Nexus"
     _G.BINDING_NAME_SBG_SWEATTARGET = "Keybind current step target targeting"
 end

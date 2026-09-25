@@ -1,5 +1,6 @@
 local ADDON, SBG = ...
 _G.SwetBetaGuide = SBG
+_G.Nexus = SBG
 _G.SBG = SBG
 
 SBG.name = ADDON
@@ -38,7 +39,7 @@ SBG.GOLD = { 0.91, 0.72, 0.29, 1 }
 SBG.INK = { 0.93, 0.90, 0.82, 1 }
 
 function SBG.Print(...)
-    DEFAULT_CHAT_FRAME:AddMessage("|cffc9a227Sweat|r |cff8a7d63Beta Guide|r: " .. tostring(...))
+    DEFAULT_CHAT_FRAME:AddMessage("|cffc9a227Nexus|r: " .. tostring(...))
 end
 
 function SBG.Applies(text)
@@ -135,7 +136,7 @@ local function Dispatch(event, ...)
         if SBG.Targeting then SBG.Targeting:Init() end
         SBG.ApplyAll()
         SBG.ready = true
-        SBG.Print("Type |cffe8b84a/sbg|r for guides, |cffe8b84a/sbg opt|r for settings.")
+        SBG.Print("Type |cffe8b84a/nexus|r to open guides.")
     elseif event == "PLAYER_LOGIN" then
         RefreshPlayer()
         local key = SBGPC.guideKey
@@ -181,11 +182,8 @@ SBG.events:RegisterEvent("BAG_UPDATE_DELAYED")
 SBG.events:RegisterEvent("PLAYER_LEVEL_UP")
 pcall(function() SBG.events:RegisterEvent("HEARTHSTONE_BOUND") end)
 
-SLASH_SWETBETAGUIDE1 = "/sbg"
-SLASH_SWETBETAGUIDE2 = "/swet"
-SLASH_SWETBETAGUIDE3 = "/swetbetaguide"
-SLASH_SWETBETAGUIDE4 = "/sweat"
-SlashCmdList["SWETBETAGUIDE"] = function(msg)
+SLASH_NEXUS1 = "/nexus"
+SlashCmdList["NEXUS"] = function(msg)
     msg = strtrim(msg or ""):lower()
     if msg == "hide" or msg == "show" then
         if SBG.UI then SBG.UI:Toggle() end

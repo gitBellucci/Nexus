@@ -385,7 +385,7 @@ function SBG.ShowDrop(items, anchor)
         SBG.StyleGlassChip(title, "pill")
         title.label = SBG.MakeText(title, "GameFontNormal")
         title.label:SetPoint("CENTER", 0, 0)
-        title.label:SetText("SWEAT")
+        title.label:SetText("NEXUS")
         title.label:SetTextColor(0.95, 0.82, 0.35)
         d.titleBar = title
 
@@ -427,17 +427,17 @@ function SBG.ShowDrop(items, anchor)
         local t = SBG.Theme()
         local titleC = t.title or t.accent
         d.titleBar.label:SetFont(font, 12, SBG.FontFlags())
-        d.titleBar.label:SetText("SWEAT")
+        d.titleBar.label:SetText("NEXUS")
         d.titleBar.label:SetTextColor(titleC[1], titleC[2], titleC[3])
     end
 
-    -- Skip a duplicate "SWEAT" title item — we render it as the chip header.
+    -- Skip a duplicate "NEXUS" title item — we render it as the chip header.
     local y = 36
     local n = 0
     local maxW = 200
     for i = 1, #items do
         local item = items[i]
-        if item.isTitle and item.text and string.upper(item.text) == "SWEAT" then
+        if item.isTitle and item.text and string.upper(item.text) == "NEXUS" then
             -- already shown in titleBar
         else
             n = n + 1
