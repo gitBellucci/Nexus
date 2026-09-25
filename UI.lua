@@ -126,9 +126,15 @@ function UI:Init()
     local function dragStart(_, button, resize)
         if SBG.GetSettings().lockFrames then return end
         if resize then
-            f.sizing = true
-            f:StartSizing("BOTTOMRIGHT")
+            if f:IsMoving() then f:StopMovingOrSizing() end
+            if not f:IsSizing() then
+                f.sizing = true
+                f:StartSizing("BOTTOMRIGHT")
+            end
         else
+            -- Guard: if already moving (e.g. parent OnMouseDown already called this),
+            -- do nothing — prevents the grab-offset snap caused by double StartMoving().
+            if f:IsMoving() or f:IsSizing() then return end
             f:StartMoving()
         end
     end
@@ -140,6 +146,11 @@ function UI:Init()
             st.windowH = math.floor(f:GetHeight() + 0.5)
             f.sizing = false
             UI:Refresh()
+        else
+            -- Persist the new position so it survives Apply/Refresh
+            local st = SBG.GetSettings()
+            st.savedX = f:GetLeft()
+            st.savedY = f:GetTop()
         end
     end
     f:RegisterForDrag("LeftButton")
