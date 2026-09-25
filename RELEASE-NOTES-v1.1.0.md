@@ -17,7 +17,7 @@ https://github.com/gitBellucci/SweatBetaGuide/pull/1
 
 ### Complete Rebrand
 - Full rename from "Sweat Beta Guide" / "SwetBetaGuide" to **Nexus**
-- New primary command: `/nexus` (legacy commands still work)
+- **ONLY slash command: `/nexus`** — all legacy commands removed (`/sbg`, `/swet`, `/sweat`)
 - Updated all UI text, tooltips, and messages
 - Theme names now branded as "Nexus Blue", "Nexus Red", "Nexus Gold", "Nexus Green"
 
@@ -27,10 +27,10 @@ https://github.com/gitBellucci/SweatBetaGuide/pull/1
 - Font consistency between top and bottom windows
 
 ### For Existing Users
-**Migration is easy!**
+**Migration required!**
 - Rename your addon folder: `SwetBetaGuide` → `Nexus`
+- Use new slash command: `/nexus` (old commands no longer work)
 - All settings, progress, and themes are preserved
-- Old slash commands (`/sbg`, `/swet`, `/sweat`) continue to work
 - Targeting macro auto-updates from `SweatTarget` to `NexusTarget`
 
 ## CurseForge Package Details
@@ -125,7 +125,8 @@ Nexus/
 ## Testing Notes
 
 All changes tested:
-- ✅ Slash commands work (`/nexus`, `/nexus opt`, legacy commands)
+- ✅ Slash command works (`/nexus` and subcommands)
+- ✅ Legacy commands removed (`/sbg`, `/swet`, `/sweat` no longer function)
 - ✅ UI drag-and-drop functions without errors
 - ✅ Branding updated throughout (tooltips, menus, chat messages)
 - ✅ Targeting macro creates `NexusTarget` correctly

@@ -5,11 +5,11 @@
 ### Breaking Changes
 - **Complete rebrand from "Sweat Beta Guide" / "SwetBetaGuide" to "Nexus"**
   - Addon folder must now be named `Nexus` (previously `SwetBetaGuide` or `SweatBetaGuide`)
-  - Primary slash command is now `/nexus` (legacy commands `/sbg`, `/swet`, `/sweat` still work)
+  - **ONLY slash command is `/nexus`** — all legacy commands (`/sbg`, `/swet`, `/sweat`) removed
   - TOC file renamed to `Nexus.toc`
 
 ### Added
-- New primary slash command: `/nexus` (opens guide menu)
+- Slash command: `/nexus` (opens guide menu, options, etc.)
 - Global `_G.Nexus` accessor for the addon (alongside existing `_G.SBG`)
 - Improved drag-and-drop reliability for UI windows
 
@@ -29,7 +29,7 @@
 ### Migration Notes
 For existing users upgrading from SwetBetaGuide/SweatBetaGuide:
 - **Saved variables preserved**: `SBGDB` and `SBGPC` remain unchanged, so your settings and progress are safe
-- **Old slash commands still work**: You can continue using `/sbg`, `/swet`, or `/sweat`
+- **Slash command changed**: Use `/nexus` instead of old commands (`/sbg`, `/swet`, `/sweat` no longer work)
 - **Targeting macro auto-updates**: If you had `SweatTarget` on your bars, it will be automatically renamed to `NexusTarget` on first load
 - **Folder rename required**: Move your addon folder from `Interface\AddOns\SwetBetaGuide` to `Interface\AddOns\Nexus`
 

@@ -136,7 +136,7 @@ local function Dispatch(event, ...)
         if SBG.Targeting then SBG.Targeting:Init() end
         SBG.ApplyAll()
         SBG.ready = true
-        SBG.Print("Type |cffe8b84a/nexus|r for guides, |cffe8b84a/nexus opt|r for settings.")
+        SBG.Print("Type |cffe8b84a/nexus|r to open guides.")
     elseif event == "PLAYER_LOGIN" then
         RefreshPlayer()
         local key = SBGPC.guideKey
@@ -182,11 +182,8 @@ SBG.events:RegisterEvent("BAG_UPDATE_DELAYED")
 SBG.events:RegisterEvent("PLAYER_LEVEL_UP")
 pcall(function() SBG.events:RegisterEvent("HEARTHSTONE_BOUND") end)
 
-SLASH_SWETBETAGUIDE1 = "/nexus"
-SLASH_SWETBETAGUIDE2 = "/sbg"
-SLASH_SWETBETAGUIDE3 = "/swet"
-SLASH_SWETBETAGUIDE4 = "/sweat"
-SlashCmdList["SWETBETAGUIDE"] = function(msg)
+SLASH_NEXUS1 = "/nexus"
+SlashCmdList["NEXUS"] = function(msg)
     msg = strtrim(msg or ""):lower()
     if msg == "hide" or msg == "show" then
         if SBG.UI then SBG.UI:Toggle() end

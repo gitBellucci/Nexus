@@ -53,8 +53,6 @@ Step-by-step quest guides with waypoint navigation, automatic targeting, and a b
 - `/nexus show` / `/nexus hide` — Toggle guide visibility
 - `/nexus arrow` — Reset waypoint arrow position
 
-Legacy commands (`/sbg`, `/swet`, `/sweat`) are also supported for compatibility.
-
 ### Installation
 
 1. Download and extract to `World of Warcraft\_classic_beta_\Interface\AddOns\`

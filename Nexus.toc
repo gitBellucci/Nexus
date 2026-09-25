@@ -1,6 +1,6 @@
 ## Interface: 16001, 11509
 ## Title: Nexus
-## Notes: In-game leveling and library-book guides for WoW Forever. Type /nexus or /sbg
+## Notes: In-game leveling and library-book guides for WoW Forever. Type /nexus
 ## Author: Nexus
 ## Version: 1.1.0
 ## IconTexture: Interface\AddOns\Nexus\Textures\icon

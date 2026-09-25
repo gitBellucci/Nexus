@@ -8,7 +8,7 @@ In-game leveling and library-book guides for **WoW Forever**.
 
 Includes full step-by-step routes with waypoint navigation, flight paths, target marking, and map pins.
 
-**Version:** 1.1.0 · **Commands:** `/nexus` · `/sbg`
+**Version:** 1.1.0 · **Command:** `/nexus`
 
 ---
 
@@ -43,7 +43,7 @@ Includes full step-by-step routes with waypoint navigation, flight paths, target
 
 ## Commands
 
-- `/nexus` or `/sbg` — Open the guide selection menu
+- `/nexus` — Open the guide selection menu
 - `/nexus opt` — Open options and theme customization
 - `/nexus reset` — Reset current guide to step 1
 - `/nexus show` / `/nexus hide` — Toggle the guide frame
